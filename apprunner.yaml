@@ -1,0 +1,129 @@
+version: 1.0
+runtime: python312 # Or your specific Python version if AppRunner supports more granular e.g. python3.12
+
+build:
+  commands:
+    # If you have build steps for frontend assets, add them here
+    # pre-build:
+    #   - echo "Running pre-build commands..."
+    build:
+      # AppRunner typically uses the Dockerfile if present in the root.
+      # If your Dockerfile is elsewhere or you need specific build commands for Python before Docker build:
+      # - pip install -r requirements.txt # This is usually handled by the Dockerfile
+      - echo "Running build commands (handled by Dockerfile)..."
+    # post-build:
+    #   - echo "Running post-build commands..."
+
+run:
+  # command: waitress-serve --port=5001 src.controller:app # This is taken from Dockerfile CMD
+  network:
+    port: 5001 # Port your application listens on
+  # instance_role: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YourAppRunnerInstanceRole # Optional: Replace with your IAM role ARN
+
+  # Environment variables (provide sensitive values via AppRunner console or AWS Secrets Manager)
+  # It's highly recommended to use AWS Secrets Manager for secrets and reference them here.
+  # For APP_DATABASE_URL, AZURE_CLIENT_SECRET, FLASK_SECRET_KEY, WBR_CONNECTION_ENCRYPTION_KEY
+  # Example:
+  # environment_variables:
+  #   - name: FLASK_ENV
+  #     value: production
+  #   - name: AZURE_CLIENT_ID
+  #     value: YOUR_AZURE_CLIENT_ID_HERE
+  #   - name: AZURE_AUTHORITY
+  #     value: https://login.microsoftonline.com/YOUR_AZURE_TENANT_ID_OR_COMMON
+  #   - name: AZURE_REDIRECT_PATH
+  #     value: /auth/redirect # Ensure your AppRunner service URL + this path is in Azure AD
+  #   - name: SESSION_TYPE
+  #     value: filesystem # or sqlalchemy if using DB backed sessions
+  #   - name: OBJECT_STORAGE_OPTION
+  #     value: s3
+  #   - name: OBJECT_STORAGE_BUCKET
+  #     value: YOUR_S3_BUCKET_NAME_FOR_REPORTS
+  #   # Secrets best managed via AppRunner console or Secrets Manager integration
+  #   # AZURE_CLIENT_SECRET: set_in_apprunner_console
+  #   # FLASK_SECRET_KEY: set_in_apprunner_console
+  #   # WBR_CONNECTION_ENCRYPTION_KEY: set_in_apprunner_console
+  #   # APP_DATABASE_URL: set_in_apprunner_console (e.g., postgresql://user:pass@host/db)
+
+  # health_check:
+  #   path: /health
+  #   protocol: HTTP
+  #   interval: 10 # seconds
+  #   timeout: 5 # seconds
+  #   healthy_threshold: 2
+  #   unhealthy_threshold: 3
+
+# Observability (tracing and metrics) - Optional
+# observability:
+#   tracing_enabled: true # Requires X-Ray SDK in your app or use OpenTelemetry
+#   metrics_enabled: true
+
+# VPC Connector - Required if your app needs to access resources in a VPC (like RDS)
+# network_configuration:
+#   vpc_connector_arn: arn:aws:apprunner:REGION:ACCOUNT_ID:vpcconnector/YOUR_VPC_CONNECTOR_NAME/REVISION
+#   # Ensure the VPC connector, subnets, and security groups are configured correctly
+#   # and the AppRunner instance role has permissions for ec2:CreateNetworkInterface etc.
+
+# Auto Scaling - Default is usually fine to start
+# auto_scaling:
+#   min_size: 1
+#   max_size: 5
+#   max_concurrency: 100
+
+# Note:
+# 1. Replace placeholder values (YOUR_*, REGION, ACCOUNT_ID) with your actual values.
+# 2. Sensitive environment variables (secrets) should be configured directly in the
+#    AppRunner service settings in the AWS console or integrated with AWS Secrets Manager,
+#    not hardcoded in this file if committed to a repository.
+# 3. If using Amazon ECR as a source, the `image_configuration` section would be used instead of `build`.
+#    source_configuration:
+#      image_repository:
+#        image_identifier: YOUR_AWS_ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/your-ecr-image:tag
+#        image_repository_type: ECR_PUBLIC # or ECR_PRIVATE
+#        image_configuration:
+#          port: "5001"
+#      authentication_configuration: # Required for ECR_PRIVATE
+#        access_role_arn: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YourAppRunnerECRAccessRole
+#
+# 4. The `runtime: python312` is a guess. AppRunner might use more generic `runtime: python`
+#    and rely purely on the Dockerfile for specifics. Check AWS AppRunner docs for current runtime values.
+#    If using a Dockerfile, `runtime` might not even be needed at the top level.
+#    If AppRunner builds from source without a Dockerfile (source code repository provider),
+#    then `runtime` and `build` commands are more critical.
+#    Given we have a Dockerfile, AppRunner will primarily use that.
+#    This apprunner.yaml is more for configuring service aspects around the container.
+
+# A simpler apprunner.yaml if relying mostly on Dockerfile and console configuration:
+# version: 1.0
+# run:
+#   network:
+#     port: 5001 # Must match EXPOSE in Dockerfile and app listening port
+#   # Define instance_role, environment_variables, health_check, vpc_connector
+#   # directly in the AppRunner console for more security with secrets.
+# health_check: # Example minimal health check
+#   path: /health
+#   protocol: HTTP
+#   interval: 20
+#   timeout: 10
+#   healthy_threshold: 2
+#   unhealthy_threshold: 2
+
+# For a source code deployment (e.g. GitHub) with AppRunner building the Docker image:
+source_configuration:
+  code_repository:
+    repository_url: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY # Replace
+    source_code_version:
+      type: BRANCH
+      value: main # Or your deployment branch
+  authentication_configuration:
+     connection_arn: arn:aws:apprunner:REGION:ACCOUNT_ID:connection/YOUR_APP_RUNNER_CONNECTION_NAME # Replace
+  code_configuration:
+    configuration_source: REPOSITORY # API is also an option if apprunner.yaml is not in repo
+    # code_configuration_values: # Not needed if apprunner.yaml is in repo and config source is REPOSITORY
+      # runtime: python312 # AppRunner can infer from Dockerfile
+      # build_command: # Handled by Dockerfile
+      # start_command: # Handled by Dockerfile CMD
+
+# The rest of the run, health_check, network_configuration etc. would be similar to above.
+# This example focuses on the source_configuration for a common GitHub setup.
+# The user will need to fill in many of these sections based on their specific AWS setup.

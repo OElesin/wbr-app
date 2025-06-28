@@ -16,6 +16,51 @@
 </head>
 
 <body class="modern-theme">
+    <header class="app-header no-print">
+        <div class="user-info">
+            {% if user_name_from_session %}
+                <span>Welcome, {{ user_name_from_session }}!</span>
+                <a href="{{ url_for('logout') }}" class="button logout-button">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="button login-button">Login with Microsoft</a>
+            {% endif %}
+        </div>
+        <style>
+            .app-header {
+                background-color: #333; /* Dark background for the header */
+                color: white;
+                padding: 10px 20px;
+                display: flex;
+                justify-content: flex-end; /* Aligns items to the right */
+                align-items: center;
+                height: 50px; /* Fixed height for the header */
+                position: fixed; /* Make header fixed at the top */
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1030; /* Ensure header is above other content */
+            }
+            .app-header .user-info span {
+                margin-right: 15px;
+                font-size: 0.9rem;
+            }
+            .app-header .button {
+                color: white;
+                background-color: #007bff;
+                padding: 6px 12px; /* Smaller padding for buttons in header */
+                text-decoration: none;
+                border-radius: 4px;
+                font-size: 0.9rem;
+                border: none;
+            }
+            .app-header .button:hover {
+                background-color: #0056b3;
+            }
+            body {
+                padding-top: 50px; /* Add padding to body to offset fixed header */
+            }
+        </style>
+    </header>
 	<!-- Modern Navigation / Sidebar Toggle -->
 	<div class="modern-nav no-print">
 		<button class="btn btn-primary" type="button" data-toggle="canvas" data-target="#bs-canvas-left"

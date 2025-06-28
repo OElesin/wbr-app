@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
+        .login-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
+        .login-container h1 { margin-bottom: 20px; }
+        .login-button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 16px; }
+        .login-button:hover { background-color: #0056b3; }
+        .hidden-form { display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        {% if auth_uri_form_data %}
+            <h1>Redirecting to Microsoft Login...</h1>
+            <form class="hidden-form" method="post" action="{{auth_uri_form_data.login_uri}}">
+                {% for key, value in auth_uri_form_data.data.items() %}
+                    <input type="hidden" name="{{key}}" value="{{value}}"/>
+                {% endfor %}
+                <noscript>
+                    <p>JavaScript is disabled. Click the button below to continue.</p>
+                    <input type="submit" value="Continue to Login" class="login-button">
+                </noscript>
+            </form>
+            <script>
+                document.forms[0].submit();
+            </script>
+        {% else %}
+            <h1>Login Required</h1>
+            <p>You need to log in to access this application.</p>
+            <p><a href="{{ url_for('login') }}" class="login-button">Login with Microsoft</a></p>
+            {% if error %}
+                <p style="color:red;">Error: {{ error }}</p>
+            {% endif %}
+            {% if error_description %}
+                <p style="color:red;">Details: {{ error_description }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
