@@ -2,358 +2,287 @@
 <html lang="en">
 
 <head>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js"></script>
-	<link rel="stylesheet" href="/wbr.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>WBR App - Modern</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css"
 		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/0.9.3/hamburgers.css" rel="stylesheet" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/wbr.css">
 	<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js"></script>
 </head>
 
-<body>
-	<!-- Pushable content along with off-canvas opener. -->
-	<div class="bs-offset-main bs-canvas-anim row col-1 no-print"
-		style="z-index:1; padding-left: 50px; padding-top: 25px;">
-		<button class="btn btn-danger" type="button" data-toggle="canvas" data-target="#bs-canvas-left"
-			aria-expanded="false" aria-controls="bs-canvas-left"
-			style="background-color: #b59154; border-color: #b59154; outline: none; position: fixed; z-index: 999999;">
-			<svg xmlns="http://www.w3.org/2000/svg" width="30" height=40" fill="currentColor" class="bi bi-list"
-				viewBox="0 0 16 16">
-				<path fill-rule="evenodd"
-					d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-			</svg>
+<body class="modern-theme">
+	<!-- Modern Navigation / Sidebar Toggle -->
+	<div class="modern-nav no-print">
+		<button class="btn btn-primary" type="button" data-toggle="canvas" data-target="#bs-canvas-left"
+			aria-expanded="false" aria-controls="bs-canvas-left" id="menu-toggle-button">
+			<i class="fas fa-bars"></i>
 		</button>
+		<span class="app-title">Weekly Business Review</span>
 	</div>
+
 
 	<!--	WELCOME TO WBR APP :: STARTED -->
-	<div id="initial-wbr-page">
-		<div style="text-align:center; padding-top: 100px;">
-			<!--WBR HEADINGS-->
-			<h1 style="color:#375479">Welcome to the WBR App</h1>
-			<span style="color:#375479; font-size: larger;">What you'll need to build your Weekly Business
-				Review:</span>
+	<div id="initial-wbr-page" class="container mt-4">
+		<div class="text-center py-5">
+			<h1 class="display-4">Welcome to the WBR App</h1>
+			<p class="lead">What you'll need to build your Weekly Business Review:</p>
 		</div>
 
-		<div style="padding:50px 250px 0px 250px">
-			<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-md-center">
-				<div class="col">
-					<div class="card shadow mb-5 bg-white rounded" style="border:none">
-						<div class="row" style="background:#eff2f5; margin:0px; padding-bottom: 44px; ">
-							<div class="col-4" style="padding-left: 35px; padding-top: 30px;">
-								<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor"
-									class="bi bi-filetype-csv" viewBox="0 0 16 16">
-									<path fill-rule="evenodd"
-										d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM3.517 14.841a1.13 1.13 0 0 0 .401.823q.195.162.478.252.284.091.665.091.507 0 .859-.158.354-.158.539-.44.187-.284.187-.656 0-.336-.134-.56a1 1 0 0 0-.375-.357 2 2 0 0 0-.566-.21l-.621-.144a1 1 0 0 1-.404-.176.37.37 0 0 1-.144-.299q0-.234.185-.384.188-.152.512-.152.214 0 .37.068a.6.6 0 0 1 .246.181.56.56 0 0 1 .12.258h.75a1.1 1.1 0 0 0-.2-.566 1.2 1.2 0 0 0-.5-.41 1.8 1.8 0 0 0-.78-.152q-.439 0-.776.15-.337.149-.527.421-.19.273-.19.639 0 .302.122.524.124.223.352.367.228.143.539.213l.618.144q.31.073.463.193a.39.39 0 0 1 .152.326.5.5 0 0 1-.085.29.56.56 0 0 1-.255.193q-.167.07-.413.07-.175 0-.32-.04a.8.8 0 0 1-.248-.115.58.58 0 0 1-.255-.384zM.806 13.693q0-.373.102-.633a.87.87 0 0 1 .302-.399.8.8 0 0 1 .475-.137q.225 0 .398.097a.7.7 0 0 1 .272.26.85.85 0 0 1 .12.381h.765v-.072a1.33 1.33 0 0 0-.466-.964 1.4 1.4 0 0 0-.489-.272 1.8 1.8 0 0 0-.606-.097q-.534 0-.911.223-.375.222-.572.632-.195.41-.196.979v.498q0 .568.193.976.197.407.572.626.375.217.914.217.439 0 .785-.164t.55-.454a1.27 1.27 0 0 0 .226-.674v-.076h-.764a.8.8 0 0 1-.118.363.7.7 0 0 1-.272.25.9.9 0 0 1-.401.087.85.85 0 0 1-.478-.132.83.83 0 0 1-.299-.392 1.7 1.7 0 0 1-.102-.627zm8.239 2.238h-.953l-1.338-3.999h.917l.896 3.138h.038l.888-3.138h.879z" />
-								</svg>
-							</div>
-							<div class="col-8" style="padding-top: 20px;">
-								<h3 class="card-title" style="color:#375479"><strong style="color:#051B38">Weekly Data</strong></h3>
-								<p class="card-text" style="color:#768EAA">File containing <strong
-										style="color:#051B38">weekly data</strong> converted from a spreadsheet or other
-									aggregator</p>
-							</div>
-						</div>
-						<div class="card-body-bottom card-body" style="text-align:center">
-							<p class="card-text" style="color:#051B38; font-size:larger">Upload a new one every week.</p>
-						</div>
+		<div class="row justify-content-center">
+			<div class="col-md-5">
+				<div class="card modern-card info-card shadow-sm">
+					<div class="card-body text-center">
+						<i class="fas fa-file-csv fa-3x text-primary mb-3"></i>
+						<h5 class="card-title"><strong>Weekly Data</strong></h5>
+						<p class="card-text text-muted">File containing <strong>weekly data</strong> (CSV format) from a spreadsheet or other aggregator.</p>
+						<p class="card-text small">Upload a new one every week.</p>
 					</div>
 				</div>
-				<div class="col">
-					<div class="card shadow mb-5 bg-white rounded" style="border:none">
-						<div class="row" style="background:#eff2f5; margin:0px; padding-bottom: 44px;">
-							<div class="col-4" style="padding-left: 35px; padding-top: 30px;">
-								<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor"
-									class="bi bi-filetype-yml" viewBox="0 0 16 16">
-									<path fill-rule="evenodd"
-										d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM2.133 15.849v-1.535l1.339-2.464h-.856l-.855 1.696h-.032L.876 11.85H0l1.339 2.479v1.52zm2.287 0v-2.66h.038l.952 2.159h.516l.946-2.16h.038v2.661h.715V11.85h-.8l-1.14 2.596H5.66L4.52 11.85h-.805v3.999zm4.71-.674h1.696v.674H8.338V11.85h.791v3.325Z" />
-								</svg>
-							</div>
-							<div class="col-8" style="padding-top: 20px;">
-								<h3 class="card-title" style="color:#375479"><strong style="color:#051B38">Configuration</strong></h3>
-								<p class="card-text" style="color:#768EAA">A markup file that configures <strong
-										style="color:#051B38">how your WBR deck is built</strong></p>
-							</div>
-						</div>
-						<div class="card-body-bottom card-body" style="text-align: center;">
-							<p class="card-text" style="color:#051B38; text-align: center; font-size:larger">Update the
-								week_ending and week_number in your configuration file, then upload</p>
-							<p class="card-text" style="color:#768EAA">You can always upload a new when you want to
-								update a structure of your report</p>
-						</div>
+			</div>
+			<div class="col-md-5">
+				<div class="card modern-card info-card shadow-sm">
+					<div class="card-body text-center">
+						<i class="fas fa-file-code fa-3x text-success mb-3"></i>
+						<h5 class="card-title"><strong>Configuration</strong></h5>
+						<p class="card-text text-muted">A markup file (YAML format) that configures <strong>how your WBR deck is built</strong>.</p>
+						<p class="card-text small">Update week_ending and week_number, then upload. Modify structure as needed.</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div id="docs" style="text-align:center; padding-bottom:25px">
+		<div id="docs" class="text-center mt-5">
+			<!-- Link will be populated by JS -->
 		</div>
-
-		<br><br>
-		<div style="padding-left: 25px;" id="footer-image">
-			<img style="width:200px" src="workingbackwards_rgb_logo_wide_blue.png" alt="Your Image">
+		<div class="text-center mt-5">
+			<img style="width:200px" src="workingbackwards_rgb_logo_wide_blue.png" alt="Working Backwards Logo">
 		</div>
 	</div>
-
 	<!--	WELCOME TO WBR APP :: END -->
 
-	<!-- Off-canvas sidebar markup, left/right or both. -->
-	<div id="bs-canvas-left" class="bs-canvas bs-canvas-anim bs-canvas-left position-fixed bg-light h-100">
-		<header class="bs-canvas-header p-3" style="background:#eff2f5;">
-			<h4 class="d-inline-block text-light mb-0"></h4>
-			<button type="button" id="close-left-nav-btn" class="bs-canvas-close close" aria-label="Close"><span
-					aria-hidden="true" style="color:#B59154; font-size:larger">&times;</span></button>
+	<!-- Off-canvas sidebar (modernized) -->
+	<div id="bs-canvas-left" class="bs-canvas bs-canvas-anim bs-canvas-left position-fixed h-100">
+		<header class="bs-canvas-header p-3">
+			<h4 class="d-inline-block mb-0">Menu</h4>
+			<button type="button" id="close-left-nav-btn" class="bs-canvas-close close" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
 		</header>
-		<div class="bs-canvas-content px-2 py-4" style="background:#eff2f5;">
-			<div>
-				<div class="card">
-					<div class="card-body">
-						<h4 class="card-title">Upload</h4>
-						<form>
-							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="data" onchange="displayDataFilename()">
-								<label class="custom-file-label" for="data" id="dataFileLabel"
-									style="border:1px solid #b59154">
-									<Strong>Weekly Data</Strong>
-									<small>CSV</small>
-								</label>
-							</div>
-							<br>
-							<br>
-							<div class="custom-file">
-								<input type="file" class="custom-file-input" id="config"
-									onchange="displayConfigFilename()">
-								<label class="custom-file-label" for="config" id="configFileLabel"
-									style="border:1px solid #b59154">
-									<Strong>Configuration</Strong>
-									<small>YAML</small>
-								</label>
-							</div>
-							<br>
-							<br>
-						</form>
-						<button type="button" id="submitter" class="btn btn-primary" data-dismiss="modal"
-							style="background-color: #b59154; border-color: #b59154; font-size:larger">Generate
-							report</button>
-						<br>
-						<br>
-						<span style="color:#768EAA;">Already have a configured report?</span>
-						<br>
-						<a class="no-print bs-canvas-close" data-toggle="modal" data-target="#uploadJsonModal"
-							style="cursor:pointer"><span style="color:#B59154">Upload JSON and generate report
-								></span></a>
+		<div class="bs-canvas-content px-3 py-4">
+			<div class="card modern-card mb-3">
+				<div class="card-body">
+					<h5 class="card-title"><i class="fas fa-upload mr-2"></i>Upload Files</h5>
+					<form>
+						<div class="custom-file mb-3">
+							<input type="file" class="custom-file-input" id="data" onchange="displayDataFilename()">
+							<label class="custom-file-label" for="data" id="dataFileLabel">
+								<strong>Weekly Data</strong> <small class="text-muted">CSV</small>
+							</label>
+						</div>
+						<div class="custom-file mb-3">
+							<input type="file" class="custom-file-input" id="config" onchange="displayConfigFilename()">
+							<label class="custom-file-label" for="config" id="configFileLabel">
+								<strong>Configuration</strong> <small class="text-muted">YAML</small>
+							</label>
+						</div>
+						<button type="button" id="submitter" class="btn btn-success btn-block" data-dismiss="modal">
+							<i class="fas fa-cogs mr-2"></i>Generate Report
+						</button>
+					</form>
+					<hr>
+					<p class="text-muted small mb-1">Already have a configured report?</p>
+					<a class="no-print bs-canvas-close text-primary" data-toggle="modal" data-target="#uploadJsonModal"
+						style="cursor:pointer;"><i class="fas fa-file-import mr-1"></i>Upload JSON and generate ></a>
+				</div>
+			</div>
+
+			<div class="card modern-card mb-3">
+				<div class="card-body">
+					<h5 class="card-title"><i class="fas fa-tools mr-2"></i>Tools</h5>
+					<button type="button" class="btn btn-outline-secondary btn-sm btn-block mb-2 no-print bs-canvas-close" data-toggle="modal" data-target="#exampleModalCenter"
+						title="Download reference csv data and yaml config files">
+						<i class="fas fa-download mr-2"></i>Get Reference Samples
+					</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm btn-block no-print bs-canvas-close" data-toggle="modal" data-target="#downloadYamlModal"
+						title="Generate a simple yaml config file stub from a local csv data file">
+						<i class="fas fa-file-alt mr-2"></i>Generate YAML Stub
+						<div id="yaml_loader" class="loader-hori-small mt-1" style="display: none;"></div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Main Content Area -->
+	<div class="container-fluid mt-3 main-content-area" style="padding-top: 60px;">
+		<!-- Team Space Selector -->
+		<div id="team-space-selector-wrapper" class="mb-3" style="display: none;"> <!-- Hidden initially -->
+			<div class="form-group d-flex align-items-center">
+				<label for="team-select" class="mr-2 mb-0"><i class="fas fa-users mr-1"></i>Team Space:</label>
+				<select class="form-control form-control-sm w-auto" id="team-select">
+					<!-- Options populated by JS -->
+				</select>
+			</div>
+		</div>
+
+		<!-- Agentic AI Insights Section (Placeholder for next step) -->
+		<div id="agentic-ai-insights" class="mb-4" style="display: none;"> <!-- Hidden initially -->
+			<div class="card modern-card">
+				<div class="card-header">
+					<h2 class="h5 mb-0"><i class="fas fa-brain mr-2"></i>AI Generated Insights & Metrics</h2>
+				</div>
+				<div class="card-body">
+					<div id="ai-metrics-container" class="row">
+						<!-- AI Metric Cards will be populated here by JS -->
+					</div>
+					<div id="ai-summary-container" class="mt-3">
+						<h4 class="h6">Insights Summary:</h4>
+						<ul id="ai-summary-list" class="list-unstyled">
+							<!-- AI Summary points will be populated here by JS -->
+						</ul>
 					</div>
 				</div>
 			</div>
-			<br>
-			<div class="col-1">
-				<button type="button" class="btn nav-bar-buttons no-print bs-canvas-close"
-					style="color:#B59154;font-size: larger;" data-toggle="modal" data-target="#exampleModalCenter"
-					title="Download reference csv data and yaml config files to your computer">
-					Get Reference samples >
-				</button>
-			</div>
-			<hr style="background-color:#375479" />
-			<div id="yaml_card">
-				<div class="col-1 no-print">
-					<button type="button" class="btn nav-bar-buttons no-print bs-canvas-close" data-toggle="modal"
-						style="color:#B59154; font-size: larger;" data-target="#downloadYamlModal"
-						title="Generate a simple yaml config file stub from a local csv data file and download to your computer">
-						Generate YAML
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-							class="bi bi-download" viewBox="0 0 16 16" style="margin-bottom: 3px;margin-left: 5px;">
-							<path
-								d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-							<path
-								d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-						</svg>
-					</button>
-				</div>
-				<p class="card-text" style="color:#768EAA; padding-left: 27px;">Generate a simple YAML config file stub
-					from a local csv data file and download to your computer</p>
+		</div>
 
-				<div id="yaml_loader" class="loader-hori"></div>
-			</div>
-			<br>
+		<!-- WBR Metrics Display Area -->
+		<div id="charts" class="contentHolder">
+			<!-- Charts and tables will be rendered here -->
 		</div>
 	</div>
+
+
+	<!-- Modals (keep structure, can restyle later if needed) -->
 	<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
 		aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-header" style="border-bottom: none;">
-					<h5 class="modal-title" id="exampleModalCenterTitle"></h5>
+			<div class="modal-content modern-modal">
+				<div class="modal-header">
+					<h5 class="modal-title">Reference Files</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true" style="color:#B59154">&times;</span>
+						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body" id="help_modal">
-					<p class="card-text" style="color:#375479; padding: 0px 0px 0px 20px;">
-						<strong>Download these reference files with sample data and configurations to get an
-							understanding of the app.</strong>
-					</p>
-					<div>
-						<div class="row" style="padding: 0px 60px 0px 35px;">
-							<div class="col" style="border-right: 1px solid; #768EAA">
-								<div class="row">
-									<span style="color:#375479"><strong>Sample 1</strong></span>
-								</div>
-								<div class="row" style="padding-top: 10px;">
-									<a href="/demo_uploads/1-wbr-sample-config.yaml">
-										<button type="button" id="ref-file-yaml" class="btn btn-secondary"
-											style="background-color: #E9DFCC; border-color: #768EAA; padding: 5px 25px 5px 25px;">
-											<span style="color:#375479"><strong>YAML</strong></span>
-										</button>
-									</a>
-									<div style="padding-right: 10px;"></div>
-									<a href="/demo_uploads/1-wbr-sample-dataset.csv">
-										<button type="button" class="btn btn-secondary"
-											style="background-color: #E9DFCC; border-color: #768EAA; padding: 5px 25px 5px 25px;">
-											<span style="color:#375479"><strong>CSV</strong></span>
-										</button>
-									</a>
-								</div>
-							</div>
-							<div class="col" style="margin-left: 5px;">
-								<div class="row">
-									<span style="color:#375479"><strong>Sample 2</strong>(with filter)</span>
-								</div>
-								<div class="row" style="padding-top: 10px;">
-									<a href="/demo_uploads/2-wbr-sample-config-with-filter.yaml">
-										<button type="button" class="btn btn-secondary"
-											style="background-color: #E9DFCC; border-color: #768EAA; padding: 5px 25px 5px 25px;">
-											<span style="color:#375479"><strong>YAML</strong></span>
-										</button>
-									</a>
-									<div style="padding-right: 10px;"></div>
-									<a href="/demo_uploads/2-wbr-sample-dataset-with-filter.csv">
-										<button type="button" class="btn btn-secondary"
-											style="background-color: #E9DFCC; border-color: #768EAA; padding: 5px 25px 5px 25px;">
-											<span style="color:#375479"><strong>CSV</strong></span>
-										</button>
-									</a>
-								</div>
-							</div>
+					<p class="text-muted">Download these reference files with sample data and configurations to get an understanding of the app.</p>
+					<div class="row">
+						<div class="col-md-6 mb-2">
+							<h6>Sample 1</h6>
+							<a href="/demo_uploads/1-wbr-sample-config.yaml" class="btn btn-outline-primary btn-sm mr-2"><i class="fas fa-file-alt mr-1"></i>YAML</a>
+							<a href="/demo_uploads/1-wbr-sample-dataset.csv" class="btn btn-outline-primary btn-sm"><i class="fas fa-file-csv mr-1"></i>CSV</a>
+						</div>
+						<div class="col-md-6 mb-2">
+							<h6>Sample 2 (with filter)</h6>
+							<a href="/demo_uploads/2-wbr-sample-config-with-filter.yaml" class="btn btn-outline-primary btn-sm mr-2"><i class="fas fa-file-alt mr-1"></i>YAML</a>
+							<a href="/demo_uploads/2-wbr-sample-dataset-with-filter.csv" class="btn btn-outline-primary btn-sm"><i class="fas fa-file-csv mr-1"></i>CSV</a>
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer"
-					style="justify-content: flex-start;padding: 10px 20px 30px 35px; border-top: none;">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154;padding: 5px 25px 5px 25px;">
-						Close
-					</button>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Upload JSON-->
 	<div class="modal fade no-print" id="uploadJsonModal" tabindex="-1" role="dialog"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		aria-labelledby="uploadJsonModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+			<div class="modal-content modern-modal">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel2">Upload JSON file</h5>
+					<h5 class="modal-title" id="uploadJsonModalLabel">Upload JSON File</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
-					<div id="form2">
-						<form>
-							<div class="form-group">
-								<label>Upload JSON file here </label><br><input type="file" id="jsonFile">
-							</div>
-						</form>
-					</div>
+					<form>
+						<div class="form-group">
+							<label for="jsonFile">Select JSON file:</label>
+							<input type="file" class="form-control-file" id="jsonFile">
+						</div>
+					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger">Close</button>
-					<button type="button" id="json_submitter" class="btn btn-primary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger">Upload</button>
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+					<button type="button" id="json_submitter" class="btn btn-primary btn-sm" data-dismiss="modal"><i class="fas fa-upload mr-1"></i>Upload</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!--CODE FOR PUBLISH CHECKBOX-->
 	<div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+			<div class="modal-content modern-modal">
 				<div class="modal-header">
-					<h5 class="modal-title" id="publishExampleModal">Publish</h5>
-					<button type="button" id="top_close" class="close" data-dismiss="modal" aria-label="Close">
+					<h5 class="modal-title">Publish Report</h5>
+					<button type="button" id="top_close_publish" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
-					<div id="form0">
-						<form>
-							<div class="form-group">
-								<label>Click the checkbox to require a Password</label> <input type="checkbox"
-									value="leftSideCheckbox" id="data0" />
-								<label id="pass_text" style="display:none">Password</label>
-								<input class="form-control" id="password" placeholder="Password" type="password"
-									style="display:none" />
-								<div style="display:flex; align-items:baseline;">
-									<input id="showPassword" style="display:none;margin-right:10px" type="checkbox"/>
-									<label id="showPassword_Text" style="display:none">Show password</label>
-								</div>
+					<form>
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="data0_publish">
+							<label class="form-check-label" for="data0_publish">Require Password</label>
+						</div>
+						<div class="form-group" id="password_fields_publish" style="display:none;">
+							<label for="password_publish">Password</label>
+							<input class="form-control form-control-sm" id="password_publish" placeholder="Password" type="password">
+							<div class="form-check mt-1">
+								<input class="form-check-input" id="showPassword_publish" type="checkbox">
+								<label class="form-check-label" for="showPassword_publish" id="showPassword_Text_publish">Show password</label>
 							</div>
-						</form>
-					</div>
+						</div>
+					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" id="button_close" class="btn btn-secondary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger">Close</button>
-					<button type="button" id="submit" class="btn btn-primary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger"
-						disabled>PUBLISH</button>
+					<button type="button" id="button_close_publish" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+					<button type="button" id="submit_publish" class="btn btn-primary btn-sm" data-dismiss="modal" disabled><i class="fas fa-share-square mr-1"></i>PUBLISH</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!---->
-
-	<!-- DownLoad files -->
-	<div class="modal fade" id="downloadYamlModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	<div class="modal fade" id="downloadYamlModal" tabindex="-1" role="dialog" aria-labelledby="downloadYamlModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+			<div class="modal-content modern-modal">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Generate Config Files</h5>
+					<h5 class="modal-title" id="downloadYamlModalLabel">Generate Config File Stub</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
-					<div id="form">
-						<form>
-							<div class="form-group">
-								<label>Upload the csv file here </label><input type="file" id="data1">
-							</div>
-						</form>
-					</div>
+					<form>
+						<div class="form-group">
+							<label for="data1_yaml_gen">Upload CSV file to generate YAML from:</label>
+							<input type="file" class="form-control-file" id="data1_yaml_gen">
+						</div>
+					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger">Close</button>
-					<button type="button" id="submitter-download" class="btn btn-primary" data-dismiss="modal"
-						style="background-color: #b59154; border-color: #b59154; font-size:larger">Download</button>
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+					<button type="button" id="submitter-download" class="btn btn-primary btn-sm" data-dismiss="modal"><i class="fas fa-download mr-1"></i>Download YAML</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div style="margin-top: 5%">
-		<div id="charts" class="contentHolder"></div>
+	<div class="page-loader" id="page_loader_div" style="display: none;">
+		<div class="spinner"></div>
 	</div>
-	<div class="divFooter no-print">@Copyright Working Backwards LLC</div>
+
+	<footer class="divFooter no-print text-center text-muted small py-3">
+		@Copyright Working Backwards LLC
+	</footer>
+
 	<script src="/wbr.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

@@ -1,6 +1,6 @@
 ﻿import io
 import json
-import logging
+import logging # Already here, but good to double check
 import os
 import tempfile
 import uuid
@@ -17,6 +17,29 @@ from werkzeug.utils import redirect
 import src.controller_utility as controller_util
 import src.test as test
 import src.validator as validator
+# Load database connections on startup
+try:
+    ALL_CONNECTIONS = controller_util.load_connections_config("connections.yaml") # Assuming connections.yaml is in root
+    logging.info("Successfully loaded database connections.")
+except Exception as e:
+    logging.error(f"Failed to load database connections on startup: {e}", exc_info=True)
+    # Depending on policy, either exit or run with limited functionality
+    # For now, we'll let it proceed, but endpoints requiring DBs will fail.
+    ALL_CONNECTIONS = {}
+
+# Attempt to import agentic_ai and initialize client
+try:
+    from src.agentic_ai import AgenticAIClient
+    agentic_ai_client = AgenticAIClient() # Initialize with default or environment-based config
+    logging.info("AgenticAIClient initialized successfully.")
+except ImportError:
+    logging.warning("AgenticAI module (src.agentic_ai) not found. AI features will be disabled.")
+    agentic_ai_client = None
+except Exception as e:
+    logging.error(f"Failed to initialize AgenticAIClient: {e}", exc_info=True)
+    agentic_ai_client = None
+
+
 import src.wbr as wbr
 from src.publish_utility import PublishWbr
 
@@ -39,24 +62,44 @@ def get_wbr_metrics():
     A flask endpoint, build WBR for given data csv and config yaml file.
     :return: A json response for the frontend to render the data
     """
-    # Get the configuration file and CSV data file from the request
-    config_file = request.files['configfile']
-    csv_data_file = request.files['csvfile']
+    # Get the WBR configuration file from the request
+    config_file = request.files.get('configfile')
+    if not config_file:
+        return app.response_class(
+            response=json.dumps({"description": "configfile is required."}),
+            status=400
+        )
 
     try:
-        cfg = controller_util.load_yaml_from_stream(config_file)
+        wbr_yaml_config = controller_util.load_yaml_from_stream(config_file)
     except Exception as e:
+        logging.error(f"Error loading WBR config YAML: {e}", exc_info=True)
         return app.response_class(
-            response=json.dumps({"description": e.__str__()}),
+            response=json.dumps({"description": f"Error loading WBR config YAML: {e}"}),
+            status=500
+        )
+
+    if not ALL_CONNECTIONS:
+        logging.error("Database connections not loaded. Cannot process request.")
+        return app.response_class(
+            response=json.dumps({"description": "Database connections are not configured or failed to load."}),
             status=500
         )
 
     try:
-        deck = process_input(csv_data_file, cfg)
+        # Get team_id from form data, default to 'all' if not provided
+        team_id = request.form.get('team_id', 'all')
+
+        # Pass the WBR YAML config, all loaded DB connections, and team_id to process_input
+        deck = process_input(
+            wbr_yaml_config=wbr_yaml_config,
+            all_db_connections=ALL_CONNECTIONS,
+            team_id=team_id # Pass team_id here
+        )
     except Exception as e:
-        logging.error(e, exc_info=True)
+        logging.error(f"Error processing WBR input: {e}", exc_info=True)
         return app.response_class(
-            response=json.dumps({"description": e.__str__()}),
+            response=json.dumps({"description": str(e)}),
             status=500
         )
 
@@ -68,17 +111,47 @@ def get_wbr_metrics():
     )
 
 
-def process_input(data, cfg):
+def process_input(wbr_yaml_config: dict, all_db_connections: dict, team_id: str = 'all'):
+    """
+    Processes the WBR request using database connections and team context.
+
+    Args:
+        wbr_yaml_config (dict): The parsed WBR YAML configuration.
+        all_db_connections (dict): Dictionary of all available database connections.
+        team_id (str): Identifier for the selected team, defaults to 'all'.
+
+    Returns:
+        dict: The generated WBR deck, potentially including AI insights.
+
+    Raises:
+        Exception: If any step in processing fails.
+    """
     try:
-        wbr_validator = validator.WBRValidator(data, cfg)
+        # data_sources are defined in the wbr_yaml_config
+        data_sources = wbr_yaml_config.get('data_sources')
+        if not data_sources:
+            raise ValueError("'data_sources' not found in WBR configuration YAML.")
+
+        # Initialize WBRValidator with data sources config, main WBR config, all connections, and team_id
+        # The WBRValidator and wbr.WBR classes would need to be adapted to use team_id for filtering if that's desired.
+        # For now, team_id is primarily for AI context and potential future filtering.
+        wbr_validator = validator.WBRValidator(
+            data_sources_config=data_sources,
+            wbr_yaml_config=wbr_yaml_config,
+            all_connections=all_db_connections,
+            team_id=team_id # Pass team_id to validator
+        )
+        # This might need adjustment if validate_yaml expects CSV-specific things
+        # or if validation rules change based on team.
         wbr_validator.validate_yaml()
     except Exception as e:
-        logging.error("Yaml validation failed", e, exc_info=True)
-        raise Exception(f"Invalid configuration provided: {e.__str__()}")
+        logging.error(f"WBR Validation or data loading failed: {e}", exc_info=True)
+        raise Exception(f"Invalid configuration or data loading error: {e}")
 
     try:
-        # Create a WBR object using the CSV data and configuration
-        wbr1 = wbr.WBR(cfg, daily_df=wbr_validator.daily_df)
+        # Create a WBR object using the DataFrame from WBRValidator and the WBR config
+        # wbr.WBR might also need to be team_id aware for its processing.
+        wbr1 = wbr.WBR(cfg=wbr_yaml_config, daily_df=wbr_validator.daily_df, team_id=team_id)
     except Exception as error:
         logging.error(error, exc_info=True)
         raise Exception(f"Could not create WBR metrics due to: {error.__str__()}")
@@ -86,9 +159,60 @@ def process_input(data, cfg):
     try:
         # Generate the WBR deck using the WBR object
         deck = controller_util.get_wbr_deck(wbr1)
+        # Ensure 'teams' definition from YAML is included in the deck for the frontend
+        if 'teams' in wbr_yaml_config:
+            deck['teams'] = wbr_yaml_config['teams']
+        else:
+            deck['teams'] = [] # Send empty list if no teams defined
+
     except Exception as err:
         logging.error(err, exc_info=True)
         raise Exception(f"Error while creating deck, caused by: {err.__str__()}")
+
+    # Agentic AI Integration
+    ai_insights_data = None
+    agentic_ai_config_yaml = wbr_yaml_config.get('agentic_ai_config', {})
+
+    if agentic_ai_client and agentic_ai_config_yaml.get('enabled', False):
+        try:
+            # Determine team name for AI prompt context
+            team_name_for_prompt = "Overall"
+            if team_id != 'all' and deck.get('teams'):
+                current_team_details = next((t for t in deck['teams'] if t.get('id') == team_id), None)
+                if current_team_details:
+                    team_name_for_prompt = current_team_details.get('name', team_id)
+
+            # Prepare prompt
+            prompt_template = agentic_ai_config_yaml.get(
+                'prompt_template',
+                "Analyze WBR data for {team_name}. Identify emerging trends, suggest new metrics, and summarize performance."
+            )
+            ai_prompt = prompt_template.format(team_name=team_name_for_prompt)
+
+            # Pass relevant data to the AI. For simulation, wbr_validator.daily_df (if available) or a part of the deck.
+            # In a real scenario, serialize df to JSON/CSV or pass specific metrics from 'deck'.
+            # data_for_ai = wbr_validator.daily_df.to_json(orient='records') if wbr_validator.daily_df is not None else deck
+            # For simulation, we can pass a simplified version of the deck or just a placeholder
+            data_for_ai_simulation = {"metrics_summary": deck.get("blocks", [])[:5], "title": deck.get("title")}
+
+
+            ai_insights_data = agentic_ai_client.generate_insights(
+                data_input=data_for_ai_simulation, # Or more specific data
+                context_prompt=ai_prompt,
+                team_name=team_name_for_prompt
+            )
+
+            if ai_insights_data:
+                logging.info("Successfully generated AI insights.")
+            else:
+                logging.warning("Agentic AI did not return insights (returned None).")
+        except Exception as e:
+            logging.error(f"Failed to generate AI insights: {e}", exc_info=True)
+            # Non-fatal: log and continue without AI insights
+
+    # Add AI insights to the main deck object if available
+    if deck: # deck should always be a dict here based on get_wbr_deck
+        deck['agentic_ai_insights'] = ai_insights_data if ai_insights_data else None
 
     return deck
 
@@ -298,17 +422,7 @@ def run_unit_test():
 
 @app.route('/report', methods=["POST"])
 def build_report():
-    output_type = request.args["outputType"] if 'outputType' in request.args else None
-
-    # Validate if data file or data file url is present in the request
-    if 'dataUrl' not in request.args and 'dataFile' not in request.files:
-        return app.response_class(
-            response=json.dumps(
-                {'error': 'Either dataUrl or dataFile required!'}, indent=4,
-                cls=controller_util.Encoder
-            ),
-            status=400
-        )
+    output_type = request.args.get("outputType")
 
     # Validate if config file or config file url is present in the request
     if 'configUrl' not in request.args and 'configFile' not in request.files:
@@ -320,61 +434,65 @@ def build_report():
             status=400
         )
 
-    # Load config
+    # Load WBR YAML config
     try:
-        cfg = controller_util.load_yaml_from_url(request.args["configUrl"]) \
-            if 'configUrl' in request.args else controller_util.load_yaml_from_stream(request.files['configFile'])
+        if 'configUrl' in request.args:
+            wbr_yaml_config = controller_util.load_yaml_from_url(request.args["configUrl"])
+        elif 'configFile' in request.files:
+            wbr_yaml_config = controller_util.load_yaml_from_stream(request.files['configFile'])
+        else:
+            # This case should be caught by the check above, but as a safeguard
+            return app.response_class(response=json.dumps({'error': 'Config not provided.'}), status=400)
     except Exception as e:
-        logging.error(e, exc_info=True)
+        logging.error(f"Failed to load WBR YAML config: {e}", exc_info=True)
         return app.response_class(
-            response=json.dumps({"error": f"Failed to load yaml, due to {e.__str__()}"}),
+            response=json.dumps({"error": f"Failed to load WBR YAML config: {e}"}),
             status=500
         )
 
-    # Load data
-    try:
-        data = request.files['dataFile'] if 'dataFile' in request.files \
-            else io.StringIO(requests.get(request.args["dataUrl"]).content.decode('utf-8'))
-    except Exception as e:
-        logging.error(e, exc_info=True)
-        return app.response_class(
-            response=json.dumps({"error": f"Failed to load the data csv, due to {e.__str__()}"}),
-            status=500
-        )
+    # Override WBR config setup based on the url query parameters
+    # Ensure 'setup' key exists
+    if "setup" not in wbr_yaml_config:
+        wbr_yaml_config["setup"] = {}
 
-    # Load events data
-    try:
-        events_data = request.files['eventsFile'] if 'eventsFile' in request.files else (
-            io.StringIO(requests.get(request.args["eventsFileUrl"]).content.decode('utf-8'))
-            if "eventsFileUrl" in request.args else None
-        )
-    except Exception as e:
-        logging.error(e, exc_info=True)
-        return app.response_class(
-            response=json.dumps({"error": f"Failed to load the events csv, due to {e.__str__()}"}),
-            status=500
-        )
-
-    # Override the config setup based on the url query parameters
     if 'week_ending' in request.args:
-        cfg["setup"]["week_ending"] = request.args["week_ending"]
+        wbr_yaml_config["setup"]["week_ending"] = request.args["week_ending"]
     if 'week_number' in request.args:
-        cfg["setup"]["week_number"] = int(request.args["week_number"])
+        wbr_yaml_config["setup"]["week_number"] = int(request.args["week_number"])
     if 'title' in request.args:
-        cfg["setup"]["title"] = request.args["title"]
+        wbr_yaml_config["setup"]["title"] = request.args["title"]
     if 'fiscal_year_end_month' in request.args:
-        cfg["setup"]["fiscal_year_end_month"] = request.args["fiscal_year_end_month"]
+        wbr_yaml_config["setup"]["fiscal_year_end_month"] = request.args["fiscal_year_end_month"]
     if 'block_starting_number' in request.args:
-        cfg["setup"]["block_starting_number"] = int(request.args["block_starting_number"])
+        wbr_yaml_config["setup"]["block_starting_number"] = int(request.args["block_starting_number"])
     if 'tooltip' in request.args:
-        cfg["setup"]["tooltip"] = bool(request.args["tooltip"])
+        wbr_yaml_config["setup"]["tooltip"] = request.args["tooltip"].lower() == "true" # Ensure boolean
+
+    if not ALL_CONNECTIONS:
+        logging.error("Database connections not loaded. Cannot process /report request.")
+        return app.response_class(
+            response=json.dumps({"description": "Database connections are not configured or failed to load."}),
+            status=500
+        )
 
     try:
-        deck = process_input(data, cfg, events_data)
+        # process_input now expects the full WBR YAML config and all DB connections
+        # Events data handling is removed from process_input for now.
+        # If events data is still needed and comes from a separate CSV,
+        # it would need to be loaded here and passed to wbr.WBR if that class still supports it.
+
+        # Get team_id from request args for /report endpoint if provided
+        report_team_id = request.args.get('team_id', 'all')
+
+        deck = process_input(
+            wbr_yaml_config=wbr_yaml_config,
+            all_db_connections=ALL_CONNECTIONS,
+            team_id=report_team_id # Pass team_id to process_input
+        )
     except Exception as e:
-        logging.error(e, exc_info=True)
+        logging.error(f"Error processing WBR input for /report: {e}", exc_info=True)
         return app.response_class(
-            response=json.dumps({"error": e.__str__()}),
+            response=json.dumps({"error": str(e)}),
             status=500
         )
 

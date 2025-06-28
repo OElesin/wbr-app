@@ -1,346 +1,363 @@
-@media screen {
-  div.divFooter {
-    display: none;
-  }
-}
-@media print {
-    div.divFooter {
-        position: fixed;
-        bottom: 0;
-    }
-    @page {
-        margin-top: 0;
-        margin-bottom: 0;
-    }
-    body  {
-        padding-top: 72px;
-        padding-bottom: 72px ;
-    }
-}
-@media print {
-    a[href]:after {
-        content: none !important;
-    }
+/* General Modern Styles */
+body.modern-theme {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f8f9fa; /* Light gray background */
+    color: #333;
+    line-height: 1.6;
+    padding-top: 70px; /* Space for fixed top nav */
 }
 
-@media print { @page {size: auto !important} }
-#chartdiv {
-    width: 980px;
+.modern-nav {
+    background-color: #343a40; /* Dark navbar */
+    color: #fff;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030; /* Bootstrap's default for fixed navbar */
+    display: flex;
+    align-items: center;
 }
 
-@media print {
-  .deckset {
-    break-inside: avoid;
-  }
+.modern-nav .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.modern-nav .app-title {
+    font-size: 1.25rem;
+    margin-left: 15px;
+    font-weight: 600;
 }
 
-.chartdiv {
-    width: 48vw;
-    height: 340px;
-    display: block;
-    padding-top: 10px
+
+#initial-wbr-page .display-4 {
+    color: #0056b3; /* Primary blue for heading */
 }
 
-.blockTableDiv {
+#initial-wbr-page .lead {
+    color: #5a6268; /* Subdued text color */
+}
+
+.info-card {
+    border: none;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+
+/* Sidebar Modernization */
+.bs-canvas {
+    background-color: #fff; /* Cleaner background */
+    border-right: 1px solid #dee2e6;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    transition: width 0.3s ease-in-out; /* Smoother animation */
+    width: 0; /* Start closed */
+    top: 0;
+    z-index: 1110; /* Higher than navbar if it overlaps */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.bs-canvas-header {
+    background-color: #f1f3f5; /* Light header for sidebar */
+    border-bottom: 1px solid #dee2e6;
+    color: #333;
+}
+.bs-canvas-header .close {
+    color: #555;
+    opacity: 0.8;
+}
+.bs-canvas-header .close:hover {
+    opacity: 1;
+}
+
+.bs-canvas-content .card-title {
+    color: #0056b3;
+}
+.custom-file-label::after {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Main Content Area */
+.main-content-area {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Team Space Selector */
+#team-space-selector-wrapper {
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px !important; /* Override Bootstrap's mb-3 if needed */
+}
+#team-space-selector-wrapper label {
+    font-weight: 600;
+    color: #375479; /* Original color, but can be theme-aligned */
+}
+#team-select {
+    border-radius: 4px;
+}
+
+
+/* Modern Card Style for Metrics and AI */
+.modern-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    background-color: #fff;
+    margin-bottom: 1.5rem; /* Spacing between cards */
+}
+
+.modern-card .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+.modern-card .card-header .h5, .modern-card .card-header h2.h5 { /* Ensure h2 inside header also gets styled if used */
+    margin-bottom: 0; /* Reset margin for headings in card headers */
+    font-size: 1.1rem; /* Consistent font size */
+}
+
+.modern-card .card-body {
+    padding: 1.25rem;
+}
+.modern-card .card-title { /* For titles within card-body */
+    color: #0056b3;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Chart and Table Divs within Cards */
+.chartdiv-modern, .tablediv-modern {
+    width: 100%; /* Make them responsive within cards */
+}
+.chartdiv-modern {
+    height: 350px; /* Default height, can be adjusted */
+}
+.tablediv-modern table {
+    font-size: 0.85rem; /* Slightly larger table font */
+    width: 100%;
+}
+
+/* Deckset (Container for multiple metric cards) */
+.deckset {
+    /* If using Bootstrap's row/col for layout, this might not need much styling */
+}
+
+/* Individual Metric Block (previously .maindiv) */
+.metric-block-card .card-header { /* If title is in header */
+    /* Styles from .modern-card .card-header apply */
+}
+.metric-block-card .card-body {
+    /* Styles from .modern-card .card-body apply */
+}
+
+
+/* AI Insights Section Specifics */
+#agentic-ai-insights .card-header {
+    background-color: #e9f5ff; /* Light blue for AI section header */
+    border-color: #b3d7ff;
+}
+#agentic-ai-insights .card-header h2 {
+    color: #0056b3;
+}
+#agentic-ai-insights .card-body {
+    font-size: 0.95rem;
+}
+.ai-metric-card { /* For individual AI generated metric cards if any */
+    border-left: 4px solid #007bff;
+}
+.ai-metric-card .metric-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+.ai-metric-card .metric-details {
+    font-size: 0.85rem;
+    color: #555;
+}
+#ai-summary-list li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+}
+#ai-summary-list li:last-child {
+    border-bottom: none;
+}
+
+
+/* Modal Modernization */
+.modern-modal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.modern-modal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom-color: #dee2e6;
+}
+.modern-modal .modal-title {
+    color: #333;
+    font-weight: 600;
+}
+
+
+/* Loader Styles */
+.page-loader {
+    position: fixed;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    display: block;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 99999; /* Very high z-index */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
-.tablediv {
-    width: 100%;
-    height: 52px;
-    display: block;
-    margin-top:10px;
-}
-
-.weekTableDiv {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid black;
-    display: inline-block;
-    margin: 5px;
-}
-
-table {
-    font-size: 0.7vw
-}
-
-td {
-    text-align:center;
-}
-.rowData {
-    text-align: center;
-    max-width: 60px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-tr {
-    text-align:center !important;
-}
-
-.counterdiv {
-  position:relative; /* Stay in place */
-  z-index: 1; /* Sit on top */
-}
-
-iframe {
-    border: none;
-}
-
-.maindivTable {
-    table {
-        margin-bottom: 0px
-    }
-    width: 49%;
-    padding-right: 0px;
-    padding-left: 0px;
-    padding-bottom: 0px;
-    display: inline-grid;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
-.maindiv {
-    width: 49%;
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-bottom: 10px;
-    border: 1px solid black;
-    display: inline-grid;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
-.sectionDiv{
-    padding: 10px;
-    border: 1px solid black;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 10px;
-    margin-bottom: 0px;
-    text-align: center;
-    width: 98.5%;
-}
-
-#container {
-    height: 400px;
-}
-
-.contentHolder{
-  width=100%;
-  display=inline-block;
-}
-
-.weekEnding {
-  padding-top: 10px;
-  text-align: right;
-  font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
-  position: relative;
-  top: -20px;
-  left: -27px;
-  text-align: right;
-  color: #FF0000;
-}
-
-.title {
-    padding-top: 10px;
-    text-align: center;
-    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
-}
-
-.blockTable {
-  height: 26px;
-}
-
-.dashboard {
-  top: -20px;
-}
-
-.container {
-    overflow:hidden;
-    height: 60px;
-}
-.one {
-    position: relative;
-    top: 0;
-    z-index: 1;
-    cursor:pointer;
-}
-.two {
-    position: relative;
-    top: -40px;
-    z-index: -1;
-    -webkit-transition: top 1s;
-    -moz-transition: top 1s;
-    -o-transition: top 1s;
-    transition: top 1s;
-}
-
-.bs-canvas-overlay {
-   opacity: 0;
-   z-index: -1;
-}
-
-.bs-canvas-overlay.show {
-   opacity: 0.85;
-   z-index: 1100;
-}
-
-.bs-canvas {
-   top: 0;
-   width: 0;
-   z-index: 1110;
-   overflow-x: hidden;
-   overflow-y: auto;
-}
-
-.bs-canvas-left {
-   left: 0;
-}
-
-.bs-canvas-right {
-   right: 0;
-}
-
-.bs-canvas-anim {
-   transition: all .4s ease-out;
-   -webkit-transition: all .4s ease-out;
-   -moz-transition: all .4s ease-out;
-   -ms-transition: all .4s ease-out;
-}
-
-.nav-bar-buttons {
-    display: inline-block;
-    font-weight: 400;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    border: 1px solid transparent;
-    padding: 0.375 rem 0.75 rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25 rem;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    color: #f8f9fa
-}
-
-.loader {
-    position: fixed;
-    left: 44%;
-    top: 32%;
+.spinner {
     width: 50px;
-    padding: 8px;
-    aspect-ratio: 1;
+    height: 50px;
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #007bff; /* Blue */
     border-radius: 50%;
-    background: #b59154;
-    --_m:
-    conic-gradient(#0000 10%,#000),
-    linear-gradient(#000 0 0) content-box;
-    -webkit-mask: var(--_m);
-          mask: var(--_m);
-    -webkit-mask-composite: source-out;
-          mask-composite: subtract;
-    animation: l3 1s infinite linear;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-@keyframes l3 {
-    to{transform: rotate(1turn)}
-}
-
-input[type=password],
-input[type=text] {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  display: block;
-  font-size: 18px;
-  margin: 5px 0px 10px;
-  padding: 8px;
-  width: 250px;
-}
-label {
-  vertical-align: middle;
-}
-
-.loader-hori{
+.loader-hori-small { /* For sidebar YAML generator */
   width: 100%;
-  height: 12px;
-  display: none;
-  background-color: #FFF;
-  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.25) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 75%, transparent 75%, transparent);
-  font-size: 30px;
-  background-size: 1em 1em;
+  height: 8px; /* Smaller height */
+  background-color: #e9ecef;
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.15) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.15) 75%, transparent 75%, transparent);
+  font-size: 20px; /* Affects background-size */
+  background-size: 0.8em 0.8em; /* Smaller pattern */
   box-sizing: border-box;
   animation: barStripe 1s linear infinite;
+  border-radius: 4px;
 }
 
-@keyframes barStripe {
-  0% {
-    background-position: 1em 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
+
+/* Print specific styles - simplified */
+@media print {
+    body.modern-theme {
+        padding-top: 0;
+        background-color: #fff; /* White background for printing */
+    }
+    .no-print { display: none !important; }
+    .modern-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+    .divFooter {
+        position: fixed;
+        bottom: 0;
+        font-size: 0.8em;
+    }
+    a[href]:after { content: none !important; }
+    @page { size: auto; margin: 0.5in; } /* Basic margin */
+}
+
+/* Fallback for old class names if they are still generated by JS before full refactor */
+.chartdiv { /* Old chart container */
+    width: 100%; /* Adapt to new card layout */
+    height: 350px;
+    padding-top: 0; /* Reset padding if card-body handles it */
+}
+.tablediv { /* Old table container */
+    width: 100%;
+    margin-top: 15px; /* Spacing from chart if in same card */
+}
+.tablediv table {
+    font-size: 0.85rem;
+    width: 100%;
+}
+.maindiv { /* Old wrapper for chart+table */
+    width: 100%; /* Take full width of its column or container */
+    border: none; /* Remove old border, card provides it */
+    padding: 0;
+    margin: 0 0 1.5rem 0; /* Spacing like a modern-card */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    background-color: #fff;
+    overflow: hidden; /* To contain floated elements or if using padding directly */
+}
+.maindiv .card-header { /* If we add a header to it */
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+.maindiv .card-body-content { /* New class to wrap content inside maindiv for padding */
+    padding: 1.25rem;
+}
+
+.titleDiv { /* For the main WBR title */
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.titleDiv .title { /* The h3 itself */
+    font-size: 1.75rem;
+    color: #0056b3;
+    font-weight: 600;
+}
+
+.sectionDiv { /* For section titles */
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+    background-color: #f0f0f0;
+    margin: 1.5rem 0;
+    text-align: center;
+    width: 100%;
+    border-radius: 6px;
+}
+.sectionDiv h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 0;
+    font-weight: 600;
 }
 
 .error-message {
-  color: red;
-  padding-top: 60px;
+  color: #dc3545; /* Bootstrap danger color */
+  padding: 20px;
   text-align: center;
-  font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
+  font-size: 1.1rem;
+  background-color: #f8d7da; /* Light red background */
+  border: 1px solid #f5c6cb; /* Reddish border */
+  border-radius: 6px;
 }
 
+/* Dynamic buttons (Publish, Download JSON) */
 .dynamic-buttons {
   position: fixed;
-  z-index: 999999;
-  top: 25px;
-  left: 75%;
-  width: 300px;
-  display: inline-flex;
-  justify-content: space-around;
+  z-index: 1025; /* Below sidebar overlay, above content */
+  top: 12px; /* Align with navbar content */
+  right: 20px; /* Position to the right */
+  display: flex;
 }
-
-.json-download-button {
-  margin: 0px 5px !important;
-  font-size: 15px !important;
-  background-color: #b59154 !important;
-  border-color: #b59154 !important;
-  outline: none !important;
+.dynamic-buttons .btn {
+  margin-left: 10px;
+  background-color: #6c757d; /* Bootstrap secondary */
+  border-color: #6c757d;
+  color: white;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
 }
-
-.publish-button {
-  margin: 0px 5px !important;
-  font-size: 15px !important;
-  background-color: #b59154 !important; 
-  border-color: #b59154 !important;
-  outline: none !important;
+.dynamic-buttons .btn:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
 }
-
-.titleDiv {
-  position: relative
-}
-
-.tableTitle {
-  text-align: center; 
-  color: rgb(51, 51, 51); 
-  font-size: 18px; 
-  fill: rgb(51, 51, 51); 
-  border: 1px;
-}
-
-.card-body-bottom {
-    flex: 1 1 auto;
-    padding: 1.25rem;
-    height: 200px;
-    padding-left: 15px;
+.dynamic-buttons .btn i {
+  margin-right: 5px;
 }

@@ -24,11 +24,26 @@ This API endpoint generates a report based on the provided CSV data and YAML con
 | `block_starting_number` | Query     | Integer | Optional | Specifies the starting number for block numbering in the report.                               |
 | `tooltip`               | Query     | String  | Optional | Specifies a tooltip to override the YAML setup parameter.                                      |
 | `password`              | Query     | String  | Optional | Password for your published report.                                                            |
+| `team_id`               | Query     | String  | Optional | ID of the team space for context/filtering (for `/report` endpoint). Defaults to 'all'.        |
 ---
 
 ## **Request Body**
-- **Optional**: YAML file content (if not using `configUrl`).
-- **Optional**: CSV file content (if not using `dataUrl`).
+
+The WBR application primarily uses two endpoints for report generation:
+
+1.  **`POST /get-wbr-metrics`** (Used by the main web UI)
+    *   **Content-Type**: `multipart/form-data`
+    *   **Form-Data Parameters**:
+        *   `configfile`: The WBR YAML configuration file (Required).
+        *   `csvfile`: The CSV data file. (Required if `data_sources` in the YAML doesn't specify a database or other source that makes this redundant).
+        *   `team_id`: ID of the team space to apply context/filtering. (Optional, defaults to 'all' on the backend if not provided).
+
+2.  **`POST /report`** (General API endpoint)
+    *   **Content-Type**: `multipart/form-data` (if uploading files) or `application/x-www-form-urlencoded` (if using URLs).
+    *   **Form-Data Parameters (if uploading files directly)**:
+        *   `configFile`: YAML configuration file.
+        *   `dataFile`: CSV data file.
+    *   *(Refer to the Query Parameters table above for parameters like `configUrl`, `dataUrl`, `outputType`, `team_id` etc. which are passed as URL query parameters for this endpoint).*
 
 ---
 
