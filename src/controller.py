@@ -27,6 +27,18 @@ except Exception as e:
     # For now, we'll let it proceed, but endpoints requiring DBs will fail.
     ALL_CONNECTIONS = {}
 
+# Attempt to import agentic_ai and initialize client
+try:
+    from src.agentic_ai import AgenticAIClient
+    agentic_ai_client = AgenticAIClient() # Initialize with default or environment-based config
+    logging.info("AgenticAIClient initialized successfully.")
+except ImportError:
+    logging.warning("AgenticAI module (src.agentic_ai) not found. AI features will be disabled.")
+    agentic_ai_client = None
+except Exception as e:
+    logging.error(f"Failed to initialize AgenticAIClient: {e}", exc_info=True)
+    agentic_ai_client = None
+
 
 import src.wbr as wbr
 from src.publish_utility import PublishWbr
@@ -75,8 +87,15 @@ def get_wbr_metrics():
         )
 
     try:
-        # Pass the WBR YAML config and all loaded DB connections to process_input
-        deck = process_input(wbr_yaml_config=wbr_yaml_config, all_db_connections=ALL_CONNECTIONS)
+        # Get team_id from form data, default to 'all' if not provided
+        team_id = request.form.get('team_id', 'all')
+
+        # Pass the WBR YAML config, all loaded DB connections, and team_id to process_input
+        deck = process_input(
+            wbr_yaml_config=wbr_yaml_config,
+            all_db_connections=ALL_CONNECTIONS,
+            team_id=team_id # Pass team_id here
+        )
     except Exception as e:
         logging.error(f"Error processing WBR input: {e}", exc_info=True)
         return app.response_class(
@@ -92,16 +111,17 @@ def get_wbr_metrics():
     )
 
 
-def process_input(wbr_yaml_config: dict, all_db_connections: dict):
+def process_input(wbr_yaml_config: dict, all_db_connections: dict, team_id: str = 'all'):
     """
-    Processes the WBR request using database connections.
+    Processes the WBR request using database connections and team context.
 
     Args:
         wbr_yaml_config (dict): The parsed WBR YAML configuration.
         all_db_connections (dict): Dictionary of all available database connections.
+        team_id (str): Identifier for the selected team, defaults to 'all'.
 
     Returns:
-        dict: The generated WBR deck.
+        dict: The generated WBR deck, potentially including AI insights.
 
     Raises:
         Exception: If any step in processing fails.
@@ -112,14 +132,17 @@ def process_input(wbr_yaml_config: dict, all_db_connections: dict):
         if not data_sources:
             raise ValueError("'data_sources' not found in WBR configuration YAML.")
 
-        # Initialize WBRValidator with data sources config, main WBR config, and all connections
+        # Initialize WBRValidator with data sources config, main WBR config, all connections, and team_id
+        # The WBRValidator and wbr.WBR classes would need to be adapted to use team_id for filtering if that's desired.
+        # For now, team_id is primarily for AI context and potential future filtering.
         wbr_validator = validator.WBRValidator(
             data_sources_config=data_sources,
             wbr_yaml_config=wbr_yaml_config,
-            all_connections=all_db_connections
+            all_connections=all_db_connections,
+            team_id=team_id # Pass team_id to validator
         )
-        # General YAML validation (e.g., setup, metrics structure)
         # This might need adjustment if validate_yaml expects CSV-specific things
+        # or if validation rules change based on team.
         wbr_validator.validate_yaml()
     except Exception as e:
         logging.error(f"WBR Validation or data loading failed: {e}", exc_info=True)
@@ -127,7 +150,8 @@ def process_input(wbr_yaml_config: dict, all_db_connections: dict):
 
     try:
         # Create a WBR object using the DataFrame from WBRValidator and the WBR config
-        wbr1 = wbr.WBR(cfg=wbr_yaml_config, daily_df=wbr_validator.daily_df)
+        # wbr.WBR might also need to be team_id aware for its processing.
+        wbr1 = wbr.WBR(cfg=wbr_yaml_config, daily_df=wbr_validator.daily_df, team_id=team_id)
     except Exception as error:
         logging.error(error, exc_info=True)
         raise Exception(f"Could not create WBR metrics due to: {error.__str__()}")
@@ -135,9 +159,60 @@ def process_input(wbr_yaml_config: dict, all_db_connections: dict):
     try:
         # Generate the WBR deck using the WBR object
         deck = controller_util.get_wbr_deck(wbr1)
+        # Ensure 'teams' definition from YAML is included in the deck for the frontend
+        if 'teams' in wbr_yaml_config:
+            deck['teams'] = wbr_yaml_config['teams']
+        else:
+            deck['teams'] = [] # Send empty list if no teams defined
+
     except Exception as err:
         logging.error(err, exc_info=True)
         raise Exception(f"Error while creating deck, caused by: {err.__str__()}")
+
+    # Agentic AI Integration
+    ai_insights_data = None
+    agentic_ai_config_yaml = wbr_yaml_config.get('agentic_ai_config', {})
+
+    if agentic_ai_client and agentic_ai_config_yaml.get('enabled', False):
+        try:
+            # Determine team name for AI prompt context
+            team_name_for_prompt = "Overall"
+            if team_id != 'all' and deck.get('teams'):
+                current_team_details = next((t for t in deck['teams'] if t.get('id') == team_id), None)
+                if current_team_details:
+                    team_name_for_prompt = current_team_details.get('name', team_id)
+
+            # Prepare prompt
+            prompt_template = agentic_ai_config_yaml.get(
+                'prompt_template',
+                "Analyze WBR data for {team_name}. Identify emerging trends, suggest new metrics, and summarize performance."
+            )
+            ai_prompt = prompt_template.format(team_name=team_name_for_prompt)
+
+            # Pass relevant data to the AI. For simulation, wbr_validator.daily_df (if available) or a part of the deck.
+            # In a real scenario, serialize df to JSON/CSV or pass specific metrics from 'deck'.
+            # data_for_ai = wbr_validator.daily_df.to_json(orient='records') if wbr_validator.daily_df is not None else deck
+            # For simulation, we can pass a simplified version of the deck or just a placeholder
+            data_for_ai_simulation = {"metrics_summary": deck.get("blocks", [])[:5], "title": deck.get("title")}
+
+
+            ai_insights_data = agentic_ai_client.generate_insights(
+                data_input=data_for_ai_simulation, # Or more specific data
+                context_prompt=ai_prompt,
+                team_name=team_name_for_prompt
+            )
+
+            if ai_insights_data:
+                logging.info("Successfully generated AI insights.")
+            else:
+                logging.warning("Agentic AI did not return insights (returned None).")
+        except Exception as e:
+            logging.error(f"Failed to generate AI insights: {e}", exc_info=True)
+            # Non-fatal: log and continue without AI insights
+
+    # Add AI insights to the main deck object if available
+    if deck: # deck should always be a dict here based on get_wbr_deck
+        deck['agentic_ai_insights'] = ai_insights_data if ai_insights_data else None
 
     return deck
 
@@ -405,7 +480,15 @@ def build_report():
         # Events data handling is removed from process_input for now.
         # If events data is still needed and comes from a separate CSV,
         # it would need to be loaded here and passed to wbr.WBR if that class still supports it.
-        deck = process_input(wbr_yaml_config=wbr_yaml_config, all_db_connections=ALL_CONNECTIONS)
+
+        # Get team_id from request args for /report endpoint if provided
+        report_team_id = request.args.get('team_id', 'all')
+
+        deck = process_input(
+            wbr_yaml_config=wbr_yaml_config,
+            all_db_connections=ALL_CONNECTIONS,
+            team_id=report_team_id # Pass team_id to process_input
+        )
     except Exception as e:
         logging.error(f"Error processing WBR input for /report: {e}", exc_info=True)
         return app.response_class(

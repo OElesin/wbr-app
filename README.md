@@ -11,12 +11,17 @@
 - [Using the WBR App](#using-the-wbr-app)
     - [Features](#features)
         - [Creating the WBR Report](#creating-the-wbr-report)
+    - [Navigating Team Spaces](#navigating-team-spaces)
+    - [Understanding Agentic AI Insights](#understanding-agentic-ai-insights)
         - [Downloading the JSON file](#downloading-the-json-file)
         - [Creating the WBR Report from a JSON file](#creating-the-wbr-report-from-a-json-file)
         - [Publishing the WBR Report to a URL](#publishing-the-wbr-report-to-a-url)
         - [Generating a WBR config file](#generating-a-wbr-config-file)
         - [Generating a WBR config file using AI](#generating-a-wbr-config-file-using-ai)
 - [Testing](#testing)
+- [Configuration for New Features](#configuration-for-new-features)
+    - [Team Spaces Configuration](#team-spaces-configuration)
+    - [Agentic AI Configuration](#agentic-ai-configuration)
 - [Additional Information](#additional-information)
 - [Toolchain used for developing WBR](#toolchain-used-for-developing-wbr)
 - [License](#license)
@@ -52,11 +57,15 @@ To get started, you'll need to install the necessary software and run the applic
 
 The WBR App primarily requires the following:
 
-*   **A WBR Configuration File (`.yaml` format):** This file defines the structure of your WBR, including metrics, calculations, and how charts and tables are displayed. Crucially, it now also specifies where to get your data from using a `data_sources` section.
-*   **A Database Connections File (`connections.yaml`):** This new file, placed in the root of the project, stores the connection details for your databases (e.g., PostgreSQL, Snowflake, Athena, Redshift). The WBR Configuration File references connections defined here.
-*   **(Optional) CSV Data File:** While the primary data source is now expected to be a database, some functionalities like generating an initial YAML configuration might still utilize a CSV as a starting point.
+*   **A WBR Configuration File (`.yaml` format):** This file defines the structure of your WBR, including metrics, calculations, how charts and tables are displayed, data sources, team definitions, and Agentic AI configurations.
+*   **A Database Connections File (`connections.yaml`):** This file, placed in the root of the project, stores the connection details for your databases (e.g., PostgreSQL, Snowflake, Athena, Redshift). The WBR Configuration File references connections defined here.
+*   **(Optional) CSV Data File:** While the primary data source is now expected to be a database (configured via `data_sources` in your WBR YAML), some functionalities like generating an initial YAML configuration might still utilize a CSV as a starting point.
 
-The application generates the WBR Report in an HTML page. You can also download a JSON representation of your WBR Report.
+The application presents a modernized UI and generates the WBR Report in an HTML page, now featuring:
+*   **Team Spaces:** Allowing metrics to be viewed in the context of specific teams.
+*   **Agentic AI Insights:** AI-generated metrics and summaries displayed at the top of the report to provide immediate value.
+
+You can also download a JSON representation of your WBR Report.
 
 ---
 
@@ -270,16 +279,29 @@ Once the command is run successful, the application will be running, and you can
 
 
 ## Using the WBR App
-To access the WBR App route your browser to `http[s]://<domain>/wbr.html`.
+To access the WBR App route your browser to `http[s]://<domain>/wbr.html`. The application now features a modernized user interface.
 
 ### Features
 #### Creating the WBR Report
 To create a WBR Report:
 1. Ensure you have a `connections.yaml` file in the root of the `wbr-app` project, correctly configured with your database connection details.
-2. Prepare your WBR Configuration YAML file. This file must now include a `data_sources` section that references a connection from `connections.yaml` and provides a SQL query.
-3. In the WBR App UI, click on the breadcrumb button (menu) to open the side panel.
-4. Upload your WBR Configuration YAML file in the "Configuration" input section. (The "Weekly Data" input for CSV is no longer the primary method for data loading).
-5. Click on the `Generate Report` button. The app will use the configurations to fetch data from your database and generate the WBR report.
+2. Prepare your WBR Configuration YAML file. This file must include a `data_sources` section referencing a connection from `connections.yaml` and providing a SQL query. Optionally, configure `teams` and `agentic_ai_config` sections (see [Configuration for New Features](#configuration-for-new-features)).
+3. In the WBR App UI, click on the menu icon (<i class="fas fa-bars"></i>) to open the side panel.
+4. Upload your WBR Configuration YAML file in the "Configuration" input section. (The "Weekly Data" CSV input is primarily for YAML stub generation or if your `data_sources` explicitly define CSV usage, though database sources are now standard).
+5. Click on the `Generate Report` button. The app will fetch data from your database, process it, potentially generate AI insights, and display the WBR report.
+
+#### Navigating Team Spaces
+If `teams` are defined in your WBR Configuration YAML:
+1. After a report is generated, a "Team Space" dropdown will appear above the report content.
+2. Select a team from the dropdown to view metrics filtered or contextualized for that team.
+3. The report title and AI-generated insights will update to reflect the selected team context.
+   *(Note: Full backend data filtering for metrics based on team selection is a planned enhancement. Currently, team selection primarily affects AI context and report titling).*
+
+#### Understanding Agentic AI Insights
+If `agentic_ai_config` is enabled in your WBR Configuration YAML:
+1. AI-generated metrics and summaries will appear in a dedicated section at the top of the WBR report.
+2. These insights are intended to provide quick, actionable observations and highlight potential new metrics for consideration.
+3. The AI insights are generated based on the overall data and the selected team context.
 
 #### Downloading the JSON file
 To download the JSON file, follow the below steps,
@@ -404,12 +426,71 @@ The test suite iterates through all scenarios from all the `scenario` folders, g
 
 A web user interface is been developed to run the test cases, route your browser to `http[s]://<domain>/unit_test_wbr.html` and click `Run Unit Tests` button.
 
+## Configuration for New Features
+
+### Team Spaces Configuration
+To enable Team Spaces, define a `teams` section in your WBR Configuration YAML file.
+
+**Example `teams` configuration:**
+```yaml
+# Inside your main WBR config.yaml
+setup:
+  # ... other setup fields ...
+
+teams:
+  - id: "all" # Optional, but good for an overall view if not default
+    name: "All Teams"
+  - id: "marketing_team_q1"
+    name: "Marketing Q1 Campaign"
+    # Optional: Define how data should be filtered for this team.
+    # This requires backend logic in wbr.py/validator.py to interpret.
+    # data_filter_column: "campaign_id"
+    # data_filter_value: "Q1MarketingCampaign2024"
+  - id: "sales_emea"
+    name: "Sales EMEA Region"
+    # description: "Focuses on sales performance in the EMEA region." # Optional
+
+# ... data_sources, metrics, deck sections ...
+```
+*   `id`: A unique identifier for the team. Used internally and can be passed to the backend.
+*   `name`: The display name for the team in the UI's dropdown selector.
+*   *(Future)* `data_filter_column`, `data_filter_value`: These are conceptual examples of how team-specific data filtering could be defined. The actual implementation of this filtering in the backend data processing logic (`wbr.py`, `validator.py`) is a future enhancement.
+
+### Agentic AI Configuration
+To enable Agentic AI-generated insights, define an `agentic_ai_config` section in your WBR Configuration YAML.
+
+**Example `agentic_ai_config`:**
+```yaml
+# Inside your main WBR config.yaml
+setup:
+  # ... other setup fields ...
+
+agentic_ai_config:
+  enabled: true  # Set to true to enable AI insights
+  prompt_template: >-  # Multi-line prompt for better readability
+    As a business analyst for {team_name}, review the provided WBR data.
+    Your goal is to identify up to 3 critical emerging trends (positive or negative),
+    suggest 1-2 novel metrics that could offer deeper insights into these trends,
+    and provide a concise overall performance summary. Focus on actionable observations.
+  # Other potential future parameters for the AI agent:
+  # model_id: "advanced_insights_model_v2"
+  # max_tokens: 500
+  # temperature: 0.7
+
+# ... data_sources, metrics, deck sections ...
+```
+*   `enabled`: Set to `true` to activate the feature. If `false` or section is missing, AI insights will not be generated.
+*   `prompt_template`: A string template for the prompt sent to the AI agent.
+    *   You can use `{team_name}` as a placeholder, which will be replaced by the currently selected team's name (or "Overall" if no specific team is chosen).
+*   The actual AWS Strands Agents service and its specific parameters would need to be configured on the backend server (e.g., via environment variables for credentials, region, specific agent/model identifiers). The YAML configuration here is for controlling the WBR App's interaction with it.
+
 
 ## Additional Information
 * For queries on customizing or building additional WBR metrics, contact [developers@workingbackwards.com]().
 
 ## API Documentation
 For detailed information on how to use the WBR App's API, please refer to the [API Documentation](docs/API_DOCUMENTATION.md). This document provides comprehensive details on the available endpoints, request parameters, and response formats.
+*(Note: The `/get-wbr-metrics` endpoint now accepts an optional `team_id` in the form data).*
 
 
 ## Toolchain used for developing WBR
