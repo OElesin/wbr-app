@@ -43,7 +43,14 @@ export async function POST(request: Request) {
     });
 
     // Don't return password hash
-    const { password: _, ...userWithoutPassword } = user;
+    // const { password: _, ...userWithoutPassword } = user; // ESLint error for unused '_'
+    const userWithoutPassword = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      emailVerified: user.emailVerified,
+    };
 
     return NextResponse.json({ message: 'User registered successfully', user: userWithoutPassword }, { status: 201 });
 

@@ -23,8 +23,10 @@
 
 /* Applying a common body font from the layout.tsx (Geist Sans) */
 body {
-  @apply font-sans bg-slate-50 text-slate-800;
-  /* Using Tailwind's apply for default body font and colors */
+  /* @apply font-sans; */ /* Removed this line */
+  @apply bg-slate-50 text-slate-800;
+  /* The font is primarily set by className in layout.tsx using CSS variables.
+     Tailwind's font-sans utility class will still work elsewhere. */
   /* background: linear-gradient(
       to bottom,
       transparent,
