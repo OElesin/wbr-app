@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // For MVP, using SQLite
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? // @db.Text
+  access_token      String? // @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? // @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?   // Added field for hashed password
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  teams         TeamMembership[] // User can be part of multiple teams
+  ownedDecks    WBRDeck[]        @relation("DeckOwner") // Decks owned by the user
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Team model
+model Team {
+  id          String      @id @default(cuid())
+  name        String
+  members     TeamMembership[]
+  wbrDecks    WBRDeck[]   // Decks associated with this team (optional, if decks are team-owned)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// Team membership model (join table for User and Team)
+model TeamMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  teamId    String
+  role      String   // e.g., "owner", "member", "editor"
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, teamId]) // User can only be in a team once with a specific role
+}
+
+// WBRDeck model
+model WBRDeck {
+  id          String    @id @default(cuid())
+  title       String
+  metrics     Json      // Storing metrics as JSON array: [{ name: "", value: "", category: "" }]
+  ownerId     String    // Who created/owns the deck
+  teamId      String?   // Optional: if the deck belongs to a team
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  owner       User      @relation("DeckOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  team        Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull) // If team is deleted, deck teamId becomes null
+}
+
+// Enum for MetricCategory (optional, if you want more type safety for the JSON structure)
+// enum MetricCategory {
+//   INPUT
+//   OUTPUT
+//   NORTH_STAR
+// }
+
+// If you store metrics in a separate related table instead of JSON:
+// model Metric {
+//   id          String  @id @default(cuid())
+//   name        String
+//   value       String  // Using string for flexibility (e.g., "10k", "5%", "1,200")
+//   category    MetricCategory // Or String if using text categories
+//   deckId      String
+//   deck        WBRDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+//   order       Int     // To maintain order of metrics in a deck
+// }

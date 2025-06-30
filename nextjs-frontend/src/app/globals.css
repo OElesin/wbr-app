@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-start-rgb: 240, 240, 240; /* Lighter gray for background start */
+  --background-end-rgb: 255, 255, 255;   /* White for background end */
+  --foreground-rgb: 0, 0, 0;          /* Black for text */
+
+  /* Custom WBR App colors */
+  --wbr-primary: 55, 84, 121; /* #375479 from original CSS */
+  --wbr-secondary: 181, 145, 84; /* #b59154 from original CSS */
+  --wbr-accent: 233, 223, 204; /* #E9DFCC from original CSS */
+  --wbr-text-light: 118, 142, 170; /* #768EAA from original CSS */
+  --wbr-text-dark: 5, 27, 56; /* #051B38 from original CSS */
+
+  /* Default Next.js dark mode colors (can be customized further) */
+  --background-start-rgb-dark: 26, 26, 26; /* Darker gray for dark background start */
+  --background-end-rgb-dark: 10, 10, 10;     /* Very dark gray for dark background end */
+  --foreground-rgb-dark: 237, 237, 237;     /* Light gray for dark mode text */
+}
+
+
+/* Applying a common body font from the layout.tsx (Geist Sans) */
+body {
+  @apply font-sans bg-slate-50 text-slate-800;
+  /* Using Tailwind's apply for default body font and colors */
+  /* background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  color: rgb(var(--foreground-rgb)); */
+  /* Ensure this aligns with layout.tsx body className for font */
+}
+
+/* Dark mode specific body styles if needed beyond Tailwind's dark: prefix */
+/* @media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgb(var(--background-end-rgb-dark))
+      )
+      rgb(var(--background-start-rgb-dark));
+    color: rgb(var(--foreground-rgb-dark));
+  }
+} */
+
+/* Basic link styling */
+a {
+  @apply text-blue-600 hover:text-blue-800 transition-colors;
+}
+
+/* Styling for form elements for consistency */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+select,
+textarea {
+  @apply mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm
+         placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500
+         sm:text-sm disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200
+         disabled:shadow-none dark:bg-slate-700 dark:border-slate-600 dark:text-white
+         dark:placeholder-slate-400 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+
+button,
+input[type="submit"],
+input[type="button"] {
+  @apply inline-flex items-center justify-center px-4 py-2 border border-transparent
+         text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2
+         focus:ring-offset-2 disabled:opacity-50;
+  /* Default button: needs specific bg/text colors where used */
+}
+
+/* Primary button style example */
+.btn-primary {
+  @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+}
+
+.btn-secondary {
+  @apply text-slate-700 bg-slate-200 hover:bg-slate-300 focus:ring-slate-400;
+}
+
+.btn-danger {
+   @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+}
+
+/* Add more global styles or component base styles here as needed */
